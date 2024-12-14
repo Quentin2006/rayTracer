@@ -17,6 +17,7 @@ int main() {
 
     // RENDER
     for (double col {0}; col < imgHeight; ++col) {
+        clog << '\r' << 100 - (col / imgHeight * 100) << "% remaning" << flush;
         for (double row {0}; row < imgWidth; ++row) {
             // these will be the value for one pixel represented as an int 0 - 255, will make a gree to red gradiant right to left,
             // with a blue to black gradiant from bottem to top
@@ -26,8 +27,9 @@ int main() {
 
             cout << r  << ' ' << g << ' ' << b << '\n';
         }
-
     }
+
+    clog << "\rDone.                     \n";
 
     return 0;
 }
