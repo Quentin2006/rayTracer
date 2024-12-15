@@ -19,13 +19,10 @@ int main() {
     for (double col {0}; col < imgHeight; ++col) {
         clog << '\r' << 100 - (col / imgHeight * 100) << "% remaning" << flush;
         for (double row {0}; row < imgWidth; ++row) {
-            // these will be the value for one pixel represented as an int 0 - 255, will make a gree to red gradiant right to left,
-            // with a blue to black gradiant from bottem to top
-            int r {int(row / imgWidth * 255.999)};
-            int g {int((imgWidth-row) / imgWidth * 255.999)};
-            int b {int(col / imgHeight * 255.999)};
-
-            cout << r  << ' ' << g << ' ' << b << '\n';
+            double r {row / imgWidth};
+            double g {(imgWidth-row) / imgWidth};
+            double b {col / imgHeight};
+            writeColor(r, g, b);
         }
     }
 
