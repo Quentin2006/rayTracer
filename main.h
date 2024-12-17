@@ -1,11 +1,10 @@
 #include <iostream>
 #include <cmath>
-#include "modules/point3/point3.h"
-#include "modules/vec3/vec3.h"
-#include "modules/ray/ray.h"
+#include "modules/color.h"
+#include "modules/vec3.h"
+#include "modules/ray.h"
 
 using namespace std;
 
-void writeColor(double r, double g, double b);
 
 
