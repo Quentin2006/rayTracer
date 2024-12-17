@@ -1,8 +1,7 @@
-#include <iostream>
-#include <cmath>
-#include "modules/color.h"
-#include "modules/vec3.h"
-#include "modules/ray.h"
+#include "modules/rtweekend.h"
+#include "modules/hittable.h"
+#include "modules/sphere.h"
+#include "modules/hittable_list.h"
 
 using namespace std;
 

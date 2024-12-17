@@ -1,34 +1,56 @@
 #include "main.h"
 
-// takes in a ray as an argument, will draw the color of the ray
-color rayColor(ray & curRay);
+// will give the ray color 
+color rayColor(ray & r, const hittable& world) {
+    // creates a hit record object
+    hit_record rec;
+    // if there was a hit, the world list will be updated with this hit and store 
+    // the t value, point of intersection, normal vector, and weather the noraml 
+    // vector is inside or outside the object all stored inside of a vector inside world
+    if (world.hit(r, interval(0, infinity), rec)) {
+        return 0.5 * (rec.normal + color(1, 1, 1));
+    }
 
-// takes a ray, radius(double) of the sphere, x,y,z(point3) the sphere is at on the x,y,z-axis
-// returns if it is hit(true) or not(false)
-bool hitSphere(const ray & curRay, double radius, const point3 & center);
+    // if there is no hit, we will draw the background as normal
+    vec3 unitDir {unit_vector(r.direction())};
+    double a {0.5*(unitDir.y() + 1)};
+    return (1.0-a)*color(1.0,1.0,1.0) + a*color(0.5,0.7,1.0);
+}
 
 int main() {
     // WIDTH OF THE IMAGE, HEIGHT IS AUTO CALULATED VIA ASPECT RATIO
-    int imgWidth {1920};
     double aspectRatio {16.0/9.0};
+    int imgWidth {1280};
     int imgHeight {int(imgWidth / aspectRatio)};
-    double focalLength {1}; // how far away the veiwplane is in the z-axis
 
-    // location of camera
-    point3 cameraLoc(0,0,0);
+    // World
+    // makes an object to hold all of the info about each hit
+    hittable_list world;
 
+    // adds two spheres to the world
+    world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
+    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+
+    // Camera
     // calulates the viewport demention, the plane of which rays will be sent through
+    double focalLength {1}; // how far away the veiwplane is in the z-axis
     double viewportHeight {2};
     double viewportWidth {viewportHeight * (double(imgWidth) / imgHeight)};
+    point3 cameraLoc(0,0,0); // location of camera
 
-    // calulates how spaced out each pixel will be
-    vec3 verticalDelta {0, viewportHeight/imgHeight, 0};
-    vec3 horozantalDelta {viewportWidth/imgWidth, 0, 0};
+    // calulates th evectors that go along the viewport
+    vec3 viewport_horizantal{viewportWidth, 0, 0};
+    vec3 viewport_vertical{0, -viewportHeight, 0};
+
+    // calulates the spacing from pixel to pixle
+    vec3 pixel_delta_horizantal {viewport_horizantal/imgWidth};
+    vec3 pixel_delta_vertical {viewport_vertical/imgHeight};
 
     // calculates the top left of the viewport, aswell as where the pixel will lie of this plane
-    point3 viewportTopLeft(cameraLoc + point3(-viewportWidth/2, viewportHeight/2, -focalLength));
+    point3 viewportTopLeft(cameraLoc 
+                           - vec3(0, 0, focalLength) - viewport_horizantal/2 - viewport_vertical/2);
     // the 0.5 will cener the rau inside the pixel
-    point3 pixelTopLeft(viewportTopLeft + 0.5 * (verticalDelta - horozantalDelta));
+    point3 pixelTopLeft(viewportTopLeft + 0.5 * (pixel_delta_horizantal + pixel_delta_vertical));
 
     // RENDER
 
@@ -41,18 +63,15 @@ int main() {
         clog << "\rScanlines remaning: " << (imgHeight - j) << ' ' << flush;
         for (int i{0}; i < imgWidth; ++i) {
             // will find the point at which the current pixel is at
-            point3 pixelCenter(pixelTopLeft + horozantalDelta * i - verticalDelta * j);
-
+            point3 pixelCenter(pixelTopLeft + pixel_delta_horizantal * i + pixel_delta_vertical * j);
             // will find the direction from the cameras origin to the intersecion of the pixel
             vec3 rayDir(pixelCenter - cameraLoc);
-
             // constructs the ray
-            ray curRay(cameraLoc, rayDir);
-
-            color pixelColor = rayColor(curRay);
-
+            ray r(cameraLoc, rayDir);
+            // calculates the color the ray should be
+            color pixelColor = rayColor(r, world);
+            // will write this coulor it cout
             write_color(cout, pixelColor);
-
         }
     }
 
@@ -61,35 +80,3 @@ int main() {
     return 0;
 }
 
-// will detect if the ray interects with the sphere
-// I did some math and found A, B, and C, then we just calculate
-// the descrimanites, this will tell us the # of intersection
-// if the # of intersection is >= 1, we can draw red
-bool hitSphere(const ray & curRay, double radius, const point3 & center) {
-    vec3 oc(center - curRay.origin());
-
-    double a {dot(curRay.direction(), curRay.direction())};
-    double b {-2.0 * dot(curRay.direction(), oc)};
-    double c {dot(oc, oc) - radius*radius};
-
-    double discriminant {b*b - 4*a*c};
-
-    return discriminant >= 0;
-}
-
-// will draw the ray color given the passed ray
-color rayColor(ray & curRay) {
-
-    if (hitSphere(curRay, 0.5, point3(0, 0, 1))) {
-        return color(1,0,0);
-    }
-
-    // this normaized ray dir is an double [-1, 1]
-    // we want a double [0,1], to do this, we can first add 1 to the vector
-    // to get a domain of [0, 2], then divide by 2 to get a domain of [0,1]
-    vec3 unitDir {unit_vector(curRay.direction())};
-    double a {(0.5*unitDir.y() + 1)};
-
-    // throwing these values to render a fun image
-    return (1.0-a)*color(1.0,1.0,1.0) + a*color(0.5,0.7,1.0);
-}
