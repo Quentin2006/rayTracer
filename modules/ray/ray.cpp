@@ -1,5 +1,4 @@
-#include "../../main.h"
-
+#include "ray.h"
 ray::ray() {
     orig.makePoint(0,0,0);
     dir.makeVector(0,0,0);

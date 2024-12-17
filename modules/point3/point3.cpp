@@ -1,4 +1,5 @@
-#include "../../main.h"
+#include "point3.h"
+#include "../vec3/vec3.h"
 
 // initlzies point to origin 
 point3::point3() {
@@ -67,4 +68,30 @@ double point3::getY() const {
 
 double point3::getZ() const {
     return point[2];
+}
+
+double point3::dot(vec3 dotVector) {
+    double dotProduct{0};
+    dotProduct += point[0] * dotVector.getX();
+    dotProduct += point[1] * dotVector.getY();
+    dotProduct += point[2] * dotVector.getZ();
+
+    return dotProduct;
+}
+double point3::dot(point3 dotVector) {
+    double dotProduct{0};
+    dotProduct += point[0] * dotVector.getX();
+    dotProduct += point[1] * dotVector.getY();
+    dotProduct += point[2] * dotVector.getZ();
+
+    return dotProduct;
+}
+
+double point3::dot(double x, double y, double z) {
+    double dotProduct{0};
+    dotProduct += point[0] * x;
+    dotProduct += point[1] * y;
+    dotProduct += point[2] * z;
+
+    return dotProduct;
 }

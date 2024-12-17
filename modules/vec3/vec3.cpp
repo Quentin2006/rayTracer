@@ -1,4 +1,6 @@
-#include "../../main.h"
+#include "vec3.h"
+#include "../point3/point3.h"
+#include <cmath>
 
 // initlzies vector to zero vector
 vec3::vec3() {
@@ -77,4 +79,30 @@ double vec3::getY() const {
 
 double vec3::getZ() const {
     return vector[2];
+}
+
+double vec3::dot(vec3 dotVector) {
+    double dotProduct{0};
+    dotProduct += vector[0] * dotVector.getX();
+    dotProduct += vector[1] * dotVector.getY();
+    dotProduct += vector[2] * dotVector.getZ();
+
+    return dotProduct;
+}
+double vec3::dot(point3 dotVector) {
+    double dotProduct{0};
+    dotProduct += vector[0] * dotVector.getX();
+    dotProduct += vector[1] * dotVector.getY();
+    dotProduct += vector[2] * dotVector.getZ();
+
+    return dotProduct;
+}
+
+double vec3::dot(double x, double y, double z) {
+    double dotProduct{0};
+    dotProduct += vector[0] * x;
+    dotProduct += vector[1] * y;
+    dotProduct += vector[2] * z;
+
+    return dotProduct;
 }
